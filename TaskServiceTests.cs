@@ -35,12 +35,10 @@ public class TaskServiceTests
     public async Task Add_ShouldAddProjectTask()
     {
         var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseInMemoryDatabase("InMemoryDb");
+            .UseInMemoryDatabase(Guid.NewGuid().ToString());
 
-        using (var db = new ApplicationDbContext(optionsBuilder.Options))
+        await using (var db = new ApplicationDbContext(optionsBuilder.Options))
         {
-            db.Database.EnsureDeleted();
-            db.Database.EnsureCreated();
             // Arrange
             var inMemoryContext = new ApplicationDbContext(optionsBuilder.Options);
             _dbContextFactoryMock

@@ -39,12 +39,10 @@ public class ProjectServiceTests
     public async Task Add_ShouldAddProject()
     {
         var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseInMemoryDatabase("InMemoryDb");
+            .UseInMemoryDatabase(Guid.NewGuid().ToString());
 
-        using (var db = new ApplicationDbContext(optionsBuilder.Options))
+        await using (var db = new ApplicationDbContext(optionsBuilder.Options))
         {
-            db.Database.EnsureDeleted();
-            db.Database.EnsureCreated();
             // Arrange
             var inMemoryContext = new ApplicationDbContext(optionsBuilder.Options);
             _dbContextFactoryMock
@@ -83,12 +81,10 @@ public class ProjectServiceTests
     public async Task GetProjectById_ShouldReturnProject()
     {
         var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseInMemoryDatabase("InMemoryDb");
+            .UseInMemoryDatabase(Guid.NewGuid().ToString());
 
-        using (var db = new ApplicationDbContext(optionsBuilder.Options))
+        await using (var db = new ApplicationDbContext(optionsBuilder.Options))
         {
-            db.Database.EnsureDeleted();
-            db.Database.EnsureCreated();
             // Arrange
             var inMemoryContext = new ApplicationDbContext(optionsBuilder.Options);
             _dbContextFactoryMock
@@ -115,12 +111,10 @@ public class ProjectServiceTests
     public async Task GetMyProjects_ShouldReturnUserProjects()
     {
         var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseInMemoryDatabase("InMemoryDb");
+            .UseInMemoryDatabase(Guid.NewGuid().ToString());
 
-        using (var db = new ApplicationDbContext(optionsBuilder.Options))
+        await using (var db = new ApplicationDbContext(optionsBuilder.Options))
         {
-            db.Database.EnsureDeleted();
-            db.Database.EnsureCreated();
             // Arrange
             var inMemoryContext = new ApplicationDbContext(optionsBuilder.Options);
             _dbContextFactoryMock
@@ -160,12 +154,10 @@ public class ProjectServiceTests
     public async Task AddMrojectMember_ShouldAddMember()
     {
         var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseInMemoryDatabase("InMemoryDb");
+            .UseInMemoryDatabase(Guid.NewGuid().ToString());
 
-        using (var db = new ApplicationDbContext(optionsBuilder.Options))
+        await using (var db = new ApplicationDbContext(optionsBuilder.Options))
         {
-            db.Database.EnsureDeleted();
-            db.Database.EnsureCreated();
             // Arrange
             var inMemoryContext = new ApplicationDbContext(optionsBuilder.Options);
             _dbContextFactoryMock
@@ -176,8 +168,6 @@ public class ProjectServiceTests
             var project = new Project { Id = 1, Title = "Test Project" };
             var user = new ApplicationUser { Id = "123" };
             var role = ProjectMemberRole.User;
-
-
 
             // Act
             await _projectService.AddProjectMember(project, user, role);
@@ -194,18 +184,15 @@ public class ProjectServiceTests
     public async Task DeleteUserFromProject_ShouldDelete()
     {
         var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseInMemoryDatabase("InMemoryDb");
+            .UseInMemoryDatabase(Guid.NewGuid().ToString());
 
-        using (var db = new ApplicationDbContext(optionsBuilder.Options))
+        await using (var db = new ApplicationDbContext(optionsBuilder.Options))
         {
-            db.Database.EnsureDeleted();
-            db.Database.EnsureCreated();
             // Arrange
             var inMemoryContext = new ApplicationDbContext(optionsBuilder.Options);
             _dbContextFactoryMock
                 .Setup(factory => factory.CreateDbContext())
                 .Returns(inMemoryContext);
-
 
             var project = new Project { Id = 1, Title = "Test Project", ToDoListId=1,ProjectConversationId=1};
             db.Projects.Add(project);
@@ -269,12 +256,10 @@ public class ProjectServiceTests
     public async Task CheckUserAcces_ShuldReturnTrue()
     {
         var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>()
-            .UseInMemoryDatabase("InMemoryDb");
+            .UseInMemoryDatabase(Guid.NewGuid().ToString());
 
-        using (var db = new ApplicationDbContext(optionsBuilder.Options))
+        await using (var db = new ApplicationDbContext(optionsBuilder.Options))
         {
-            db.Database.EnsureDeleted();
-            db.Database.EnsureCreated();
             // Arrange
             var inMemoryContext = new ApplicationDbContext(optionsBuilder.Options);
             _dbContextFactoryMock
@@ -288,9 +273,6 @@ public class ProjectServiceTests
             var projectMember = new ProjectMember { Id = 1, UserId = "123", ProjectId = 1, Role = 0 };
             db.ProjectMembers.Add(projectMember);
             await db.SaveChangesAsync();
-
-
-
 
             // Act
             bool result = await _projectService.CheckUserAccess(1);
