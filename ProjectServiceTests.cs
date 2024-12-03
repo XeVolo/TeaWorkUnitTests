@@ -156,4 +156,147 @@ public class ProjectServiceTests
 
         }
     }
+    [Fact]
+    public async Task AddMrojectMember_ShouldAddMember()
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase("InMemoryDb");
+
+        using (var db = new ApplicationDbContext(optionsBuilder.Options))
+        {
+            db.Database.EnsureDeleted();
+            db.Database.EnsureCreated();
+            // Arrange
+            var inMemoryContext = new ApplicationDbContext(optionsBuilder.Options);
+            _dbContextFactoryMock
+                .Setup(factory => factory.CreateDbContext())
+                .Returns(inMemoryContext);
+
+
+            var project = new Project { Id = 1, Title = "Test Project" };
+            var user = new ApplicationUser { Id = "123" };
+            var role = ProjectMemberRole.User;
+
+
+
+            // Act
+            await _projectService.AddProjectMember(project, user, role);
+
+            // Assert
+            var result = await db.ProjectMembers.AsNoTracking().ToListAsync();
+            Assert.Single(result);
+            Assert.Equal("123", result[0].UserId);
+            Assert.Equal(1, result[0].ProjectId);
+
+        }
+    }
+    [Fact]
+    public async Task DeleteUserFromProject_ShouldDelete()
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase("InMemoryDb");
+
+        using (var db = new ApplicationDbContext(optionsBuilder.Options))
+        {
+            db.Database.EnsureDeleted();
+            db.Database.EnsureCreated();
+            // Arrange
+            var inMemoryContext = new ApplicationDbContext(optionsBuilder.Options);
+            _dbContextFactoryMock
+                .Setup(factory => factory.CreateDbContext())
+                .Returns(inMemoryContext);
+
+
+            var project = new Project { Id = 1, Title = "Test Project", ToDoListId=1,ProjectConversationId=1};
+            db.Projects.Add(project);
+            await db.SaveChangesAsync();
+
+            var user = new ApplicationUser { Id = "123" };
+            db.Users.Add(user);
+            await db.SaveChangesAsync();
+
+            var projectMember = new ProjectMember { Id = 1, UserId = user.Id, ProjectId = project.Id,Role=0 };
+            db.ProjectMembers.Add(projectMember);
+            await db.SaveChangesAsync();
+
+            var conversationMember = new ConversationMember { Id = 1, UserId = "123", ConversationId=1 };
+            db.ConversationMembers.Add(conversationMember);
+            await db.SaveChangesAsync();
+
+            var projectTasks = new List<ProjectTask>
+            {
+                new ProjectTask { Id = 1, ToDoListId = 1 },
+                new ProjectTask { Id = 2, ToDoListId = 1 }
+            };
+            db.ProjectTasks.AddRange(projectTasks);
+            await db.SaveChangesAsync();
+
+            var projectDistribution = new List<TaskDistribution>
+            {
+                new TaskDistribution {Id=1, TaskId=1,UserId="123" },
+                new TaskDistribution {Id=2, TaskId=2,UserId="123" }
+            };
+            db.TaskDistributions.AddRange(projectDistribution);
+            await db.SaveChangesAsync();
+
+            var invitation = new Invitation { Id = 1, ProjectId = 1, UserId = "123" };
+            db.Invitations.Add(invitation);
+            await db.SaveChangesAsync();
+
+            // Act
+            await _projectService.DeleteUserFromProject(user.Id,project.Id);
+
+            // Assert
+            var result1 = await db.Projects.AsNoTracking().ToListAsync();
+            var result2 = await db.Users.AsNoTracking().ToListAsync();
+            var result3 = await db.ProjectMembers.AsNoTracking().ToListAsync();
+            var result4 = await db.ConversationMembers.AsNoTracking().ToListAsync();
+            var result5 = await db.ProjectTasks.AsNoTracking().ToListAsync();
+            var result6 = await db.TaskDistributions.AsNoTracking().ToListAsync();
+            var result7 = await db.Invitations.AsNoTracking().ToListAsync();
+
+            Assert.Single(result1);
+            Assert.Single(result2);
+            Assert.Empty(result3);
+            Assert.Empty(result4);
+            Assert.Equal(2,result5.Count());
+            Assert.Empty(result6);
+            Assert.Empty(result7);
+
+        }
+    }
+    [Fact]
+    public async Task CheckUserAcces_ShuldReturnTrue()
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase("InMemoryDb");
+
+        using (var db = new ApplicationDbContext(optionsBuilder.Options))
+        {
+            db.Database.EnsureDeleted();
+            db.Database.EnsureCreated();
+            // Arrange
+            var inMemoryContext = new ApplicationDbContext(optionsBuilder.Options);
+            _dbContextFactoryMock
+                .Setup(factory => factory.CreateDbContext())
+                .Returns(inMemoryContext);
+
+            _userIdentityMock
+                .Setup(u => u.GetLoggedUser())
+                .ReturnsAsync(new ApplicationUser { Id = "123" });
+
+            var projectMember = new ProjectMember { Id = 1, UserId = "123", ProjectId = 1, Role = 0 };
+            db.ProjectMembers.Add(projectMember);
+            await db.SaveChangesAsync();
+
+
+
+
+            // Act
+            bool result = await _projectService.CheckUserAccess(1);
+
+            // Assert
+            Assert.True(result);
+        }
+    }
 }
