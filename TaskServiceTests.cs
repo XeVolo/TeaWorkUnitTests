@@ -394,4 +394,70 @@ public class TaskServiceTests
             Assert.Equal(TaskPriority.Medium, result[1].Priority);
         }
     }
+    [Fact]
+    public async Task AddPrivateTask_ShouldAdd()
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString());
+
+        await using (var db = new ApplicationDbContext(optionsBuilder.Options))
+        {
+            // Arrange
+            var inMemoryContext = new ApplicationDbContext(optionsBuilder.Options);
+            _dbContextFactoryMock
+                .Setup(factory => factory.CreateDbContext())
+                .Returns(inMemoryContext);
+            
+            _userIdentityMock
+                .Setup(u => u.GetLoggedUser())
+                .ReturnsAsync(new ApplicationUser { Id = "123" });
+
+            // Act
+            await _taskService.AddPrivateTask(DateTime.Now.AddDays(1), DateTime.Now.AddDays(2),"Title","Description");
+            // Assert
+            var result = await db.PrivateTasks.AsNoTracking().ToListAsync();
+
+            Assert.Single(result);
+            Assert.Equal("123", result[0].UserId);
+            Assert.Equal("Description", result[0].Description);
+        }
+    }
+    [Fact]
+    public async Task EditPrivateTask_ShouldEdit()
+    {
+        var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>()
+            .UseInMemoryDatabase(Guid.NewGuid().ToString());
+
+        await using (var db = new ApplicationDbContext(optionsBuilder.Options))
+        {
+            // Arrange
+            var inMemoryContext = new ApplicationDbContext(optionsBuilder.Options);
+            _dbContextFactoryMock
+                .Setup(factory => factory.CreateDbContext())
+                .Returns(inMemoryContext);
+
+            var task = new PrivateTask 
+            {
+            Id=1,
+            Start= DateTime.Now.AddDays(1),
+            End= DateTime.Now.AddDays(1),
+            Title= "Title1",
+            UserId= "123",
+            Description="Description222"
+            };
+            db.PrivateTasks.Add(task);
+            await db.SaveChangesAsync();
+
+            // Act
+            await _taskService.EditPrivateTask(1,DateTime.Now.AddDays(1), DateTime.Now.AddDays(2), "Title", "Description");
+            // Assert
+            var result = await db.PrivateTasks.AsNoTracking().ToListAsync();
+
+            Assert.Single(result);
+            Assert.Equal("Title", result[0].Title);
+            Assert.Equal(1, result[0].Id);
+            Assert.Equal("123", result[0].UserId);
+            Assert.Equal("Description", result[0].Description);
+        }
+    }
 }
