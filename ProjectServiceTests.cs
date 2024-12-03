@@ -36,7 +36,7 @@ public class ProjectServiceTests
     }
 
     [Fact]
-    public async Task Add_ShouldAddProjectAndLogSuccess()
+    public async Task Add_ShouldAddProject()
     {
         var optionsBuilder = new DbContextOptionsBuilder<ApplicationDbContext>()
             .UseInMemoryDatabase("InMemoryDb");
