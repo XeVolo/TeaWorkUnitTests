@@ -127,15 +127,18 @@ public class ProjectServiceTests
             var projects = new List<Project>
             {
                 new Project { Id = 1, Title = "Project 1" },
-                new Project { Id = 2, Title = "Project 2" }
+                new Project { Id = 2, Title = "Project 2" },
+                new Project { Id = 3, Title = "Project 3" }
             };
             db.Projects.AddRange(projects);
             await db.SaveChangesAsync();
             var projectMembers = new List<ProjectMember>
             {
                 new ProjectMember { Id = 1, ProjectId=1, UserId="123" },
-                new ProjectMember { Id = 2, ProjectId=2, UserId="123" }
+                new ProjectMember { Id = 2, ProjectId=2, UserId="123" },
+                new ProjectMember { Id = 3, ProjectId=3, UserId="321" },
             };
+        
             db.ProjectMembers.AddRange(projectMembers);
             await db.SaveChangesAsync();
 
