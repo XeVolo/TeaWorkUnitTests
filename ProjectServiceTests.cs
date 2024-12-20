@@ -4,7 +4,6 @@ using Moq;
 using TeaWork.Data.Enums;
 using TeaWork.Data.Models;
 using TeaWork.Data;
-using TeaWork.Logic.DbContextFactory;
 using TeaWork.Logic.Dto;
 using TeaWork.Logic.Services.Interfaces;
 using TeaWork.Logic.Services;
@@ -16,7 +15,7 @@ public class ProjectServiceTests
     private Mock<IUserIdentity> _userIdentityMock;
     private Mock<IConversationService> _conversationServiceMock;
     private Mock<ILogger<ProjectService>> _loggerMock;
-    private Mock<IDbContextFactory> _dbContextFactoryMock;
+    private Mock<IDbContextFactory<ApplicationDbContext>> _dbContextFactoryMock;
 
     private ProjectService _projectService;
 
@@ -25,7 +24,7 @@ public class ProjectServiceTests
 
         _userIdentityMock = new Mock<IUserIdentity>();
         _conversationServiceMock = new Mock<IConversationService>();
-        _dbContextFactoryMock = new Mock<IDbContextFactory>();
+        _dbContextFactoryMock = new Mock<IDbContextFactory<ApplicationDbContext>>();
         _loggerMock = new Mock<ILogger<ProjectService>>();
 
         _projectService = new ProjectService(

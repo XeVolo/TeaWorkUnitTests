@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using TeaWork.Logic.Services.Interfaces;
 using TeaWork.Logic.Services;
-using TeaWork.Logic.DbContextFactory;
 using Microsoft.EntityFrameworkCore;
 using TeaWork.Data;
 using TeaWork.Logic.Dto;
@@ -19,7 +18,7 @@ namespace TeaWorkUnitTests
     {
         private Mock<IUserIdentity> _userIdentityMock;
         private Mock<ILogger<DesignConceptService>> _loggerMock;
-        private Mock<IDbContextFactory> _dbContextFactoryMock;
+        private Mock<IDbContextFactory<ApplicationDbContext>> _dbContextFactoryMock;
 
         private DesignConceptService _designConceptService;
 
@@ -27,7 +26,7 @@ namespace TeaWorkUnitTests
         {
 
             _userIdentityMock = new Mock<IUserIdentity>();
-            _dbContextFactoryMock = new Mock<IDbContextFactory>();
+            _dbContextFactoryMock = new Mock<IDbContextFactory<ApplicationDbContext>>();
             _loggerMock = new Mock<ILogger<DesignConceptService>>();
 
             _designConceptService = new DesignConceptService(

@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using TeaWork.Logic.Services.Interfaces;
 using TeaWork.Logic.Services;
-using TeaWork.Logic.DbContextFactory;
 using Microsoft.EntityFrameworkCore;
 using Radzen;
 using TeaWork.Data.Enums;
@@ -23,7 +22,7 @@ namespace TeaWorkUnitTests
         private Mock<IConversationService> _conversationServiceMock;
         private Mock<IProjectService> _projectServiceMock;
         private Mock<ILogger<InvitationService>> _loggerMock;
-        private Mock<IDbContextFactory> _dbContextFactoryMock;
+        private Mock<IDbContextFactory<ApplicationDbContext>> _dbContextFactoryMock;
 
         private InvitationService _invitationService;
 
@@ -32,7 +31,7 @@ namespace TeaWorkUnitTests
 
             _userIdentityMock = new Mock<IUserIdentity>();
             _conversationServiceMock = new Mock<IConversationService>();
-            _dbContextFactoryMock = new Mock<IDbContextFactory>();
+            _dbContextFactoryMock = new Mock<IDbContextFactory<ApplicationDbContext>>();
             _projectServiceMock = new Mock<IProjectService>();
             _loggerMock = new Mock<ILogger<InvitationService>>();
 
